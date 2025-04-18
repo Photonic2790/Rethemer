@@ -1,0 +1,2 @@
+[GPTK]: Running in UINPUT output mode.
+/mnt/mmc/MUOS/application/Rethemer/mux_launch.sh: line 31: systemctl: command not found

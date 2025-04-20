@@ -88,7 +88,6 @@ local SEL = 1
 
 --[[these stay as reference for the COL and POS arrays
 -- these names are from the muOS ini file
--- todo make these into a table
 local BACKGROUND = ""
 local BACKGROUND_GRADIENT_COLOR = ""
 local NETWORK_ACTIVE = ""
@@ -157,7 +156,7 @@ function love.load()
 
 	-- contents, size = love.filesystem.read("muOS-Alt.ini", all)
     local readFilePath = "/mnt/mmc/MUOS/theme/active/alternate/muOS-Alt.ini"
-    local readFile = io.open(readFilePath, "r+") -- w
+    local readFile = io.open(readFilePath, "r+") 
 		    
 	if readFile then
         contents = readFile:read "*all"
@@ -165,14 +164,14 @@ function love.load()
     else
         print("Failed to open system file for reading. Using local file.")
     	readFilePath = "./rethemer/muOS-Alt.ini"
-        readFile = io.open(readFilePath, "r+") -- w
+        readFile = io.open(readFilePath, "r+") 
     	if readFile then
        		contents = readFile:read "*all"
        		readFile:close()
     	else
        		print("Failed to open local file for reading.")
     		readFilePath = "./muOS-Alt.ini"
-       		readFile = io.open(readFilePath, "r+") -- w
+       		readFile = io.open(readFilePath, "r+") 
     		if readFile then
        			contents = readFile:read "*all"
        			readFile:close()
@@ -203,7 +202,7 @@ function love.draw()
 	blueSTR = string.format("%02x", blue)
 	help = help - 1
 
-	for x = 1 ,24 do
+	for x = 1 ,24 do -- loop through all the settings and draw the current color next to the text
 		tempRed = tonumber(contents[POS[x]],16)*16 + tonumber(contents[POS[x]+1],16)
 		tempR = tempRed/255
 		tempGreen = tonumber(contents[POS[x]+2],16)*16 + tonumber(contents[POS[x]+3],16)
@@ -227,7 +226,7 @@ function love.draw()
 	y = o + ls
 	z = 160
 	love.graphics.setColor(.01,.01,.01,1)
-	for tempR = 0, 1 do
+	for tempR = 0, 1 do -- loop through text drawing with an offset and recolor for a cheap drop shadow
 		x = x - tempR * 2
 		y = y - tempR * 2
 		if (SEL <= 12) then
@@ -296,22 +295,22 @@ function love.draw()
 	mdelay = mdelay + 1
     if (mdelay >= 1 and love.mouse.isDown(1) or love.mouse.isDown(2) or love.mouse.isDown(3)) then
 		-- chzy btn flthr trk, literally fall down(and right) writing else if buttons using outer x y limits, overlaps become irrelevant
-		if (mx < 516 and my < 29) then -- red 1
+		if (mx < 516 and my < 29) then -- red slider
 			mdelay = 0
 			red = math.floor(mx/2)
 			if red > 255 then red = 255 end
 			r = red/255
-		elseif (mx < 516 and my < 51) then -- green 1
+		elseif (mx < 516 and my < 51) then -- green slider
 			mdelay = 0
 			green = math.floor(mx/2)
 			if green > 255 then green = 255 end
 			g = green/255
-		elseif (mx < 516 and my < 73) then -- blue 1
+		elseif (mx < 516 and my < 73) then -- blue slider
 			mdelay = 0
 			blue = math.floor(mx/2)
 			if blue > 255 then blue = 255 end
 			b = blue/255
-		elseif (mdelay > 30 and mx > 570 and my < 80) then 
+		elseif (mdelay > 90 and mx > 570 and my < 80) then -- current color buffer button
 			mdelay = 0 -- lets not multi write ^^ mdelay is checked again here
 			contents = contents:sub(1,POS[SEL]-1)..redSTR..greenSTR..blueSTR..contents:sub(POS[SEL]+6)
 			-- updating these here seems to work well
@@ -412,10 +411,10 @@ function love.draw()
 				blue = tonumber(contents[POS[SEL]+4],16)*16 + tonumber(contents[POS[SEL]+5],16)
 				b = blue/255
 			end
-		elseif (help < 60 and my >  y + ls * 17 and mx < 320) then -- help menu
+		elseif (help < 60 and my >  y + ls * 15 and mx < 320) then -- help menu
 			mdelay = 0
 			help = 1200
-		elseif (help < 0 and mdelay > 30 and my >  y + ls * 17 and mx > 320) then --
+		elseif (help < 0 and mdelay > 30 and my >  y + ls * 17 and mx > 320) then -- presets
 			mdelay = 0
 			local readFilePath = "./rethemer/muOS-Alt.ini"
 			if (mx < 320 + 320/4) then  	
@@ -427,14 +426,14 @@ function love.draw()
     		else	
 				readFilePath = "./rethemer/presets/Gray-Poupon.ini"
 			end
-    		local readFile = io.open(readFilePath, "r+") -- w
+    		local readFile = io.open(readFilePath, "r+") 
 			if readFile then
     		    contents = readFile:read "*all"
     		    readFile:close()
     		else
     		    print("Failed to open system preset file for reading. Trying local filesystem.")
     			readFilePath = "."..readFilePath:sub(11)
-    			readFile = io.open(readFilePath, "r+") -- w
+    			readFile = io.open(readFilePath, "r+") 
 				if readFile then
     			    contents = readFile:read "*all"
     			    readFile:close()
@@ -457,7 +456,7 @@ function love.draw()
 	end
 	
 	x=0
-	while x < 255 do
+	while x < 255 do -- the slider bars
 		love.graphics.setColor(.7,.7,.7,1)
 		love.graphics.draw(dot, x*2-2, 2)	 -- white backdrop	
 		love.graphics.draw(dot, x*2-2, 20)	 -- white backdrop		
@@ -472,6 +471,7 @@ function love.draw()
 		x = x + 2
 	end
 	
+	-- the slider line
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.draw(line, red * 2,   10)
 	love.graphics.draw(line, green * 2, 30)
@@ -484,20 +484,22 @@ function love.draw()
 		x = x - tempR * 2
 		y = y - tempR * 2
 
+		love.graphics.print("0 - 1 {", x - 50, y - ls * 2)
 		love.graphics.print("Red", x, y - ls * 3)
 		love.graphics.print(": "..string.format("%f", r), x + 50, y - ls * 3)
-		love.graphics.print("Red", x + 310, y - ls * 3)
-		love.graphics.print(": "..tostring(red), x + 360, y - ls * 3)
 		love.graphics.print("Green", x, y - ls * 2)
 		love.graphics.print(": "..string.format("%f", g), x + 50, y - ls * 2)
-		love.graphics.print("Green", x + 310, y - ls * 2)
-		love.graphics.print(": "..tostring(green), x + 360, y - ls * 2)
 		love.graphics.print("Blue", x, y - ls)
 		love.graphics.print(": "..string.format("%f", b), x + 50, y - ls)
+
+		love.graphics.print("0 - 255 {", x + 250, y - ls * 2)
+		love.graphics.print("Red", x + 310, y - ls * 3)
+		love.graphics.print(": "..tostring(red), x + 360, y - ls * 3)
+		love.graphics.print("Green", x + 310, y - ls * 2)
+		love.graphics.print(": "..tostring(green), x + 360, y - ls * 2)
 		love.graphics.print("Blue", x + 310, y - ls)
 		love.graphics.print(": "..tostring(blue), x + 360, y - ls)
-		love.graphics.print("0 - 1 {", x - 50, y - ls * 2)
-		love.graphics.print("0 - 255 {", x + 250, y - ls * 2)
+
 		love.graphics.print("HEXCODE : "..redSTR..greenSTR..blueSTR, x + 410, y - ls * 2)
 	
 		if help > 0 then 
@@ -510,12 +512,12 @@ function love.draw()
 			love.graphics.print("Press 'A' to set current color to selected editing item, or click the top right square.", x - 70, y + z * 21)
 		else
 			z = 15 -- in place of ls for compact text
-			love.graphics.print("Rethemer 1.0 for MUOS - Pixie. Create an alternative color theme for your handheld on your handheld.", x - 70, y + z * 17)
+			love.graphics.print("Rethemer 1.1 for MUOS - Pixie. Create an alternative color theme for your handheld on your handheld.", x - 75, y + z * 17)
 			love.graphics.print("To use go to 'CONFIG > CUSTOMISATION > ALTERNATIVE THEME > MUOS-ALT' from the main menu.", x - 70, y + z * 18)
 			love.graphics.print("	Click Here for Help Menu.  ???", x - 70, y + z * 20)
 			love.graphics.print("	'Menu' and 'Start' to exit.", x - 70, y + z * 21)
 			love.graphics.print("!! Presets !!", 450, y + z * 20)
-			love.graphics.print("Max-Mustard |  Neon-Dijon |  Red-Giant | Gray-Poupon", 317, y + z * 21)
+			love.graphics.print("Max-Mustard |  Neon-Dijon |  Red-Giant | Gray-Poupon", 316, y + z * 21)
 		end
 
 		love.graphics.setColor(1,1,1,1)
@@ -563,8 +565,8 @@ function love.draw()
 
 end
 
-function love.gamepadpressed(joystick, button)
-	if button == "a" then
+function love.keypressed(k) -- using gptokey for all handheld commands, making rethemer keyboard compatible
+	if k == "a" then
 		contents = contents:sub(1,POS[SEL]-1)..redSTR..greenSTR..blueSTR..contents:sub(POS[SEL]+6)
 		-- updating these here seems to work well
 		COL[SEL] = contents:sub(POS[SEL],POS[SEL]+6)
@@ -584,41 +586,47 @@ function love.gamepadpressed(joystick, button)
 				print("Failed to open local default file for writing.")
 			end
 		end
-	elseif button =="dpup" then
+	elseif k =="up" then
 		SEL = SEL - 1
 		if SEL <= 0 then SEL = 24 end
-	elseif button =="dpdown" then
+	elseif k =="down" then
 		SEL = SEL + 1
 		if SEL >= 25 then SEL = 1 end
-	elseif button =="dpleft" or button == "dpright" then
+	elseif k =="left" or k == "right" then
 		if SEL >= 13 then 
 			SEL = SEL - 12 
 		else 
 			SEL = SEL + 12 
 		end
-	elseif button == "rightstick" then
+	elseif k == "rctrl" or k == "lctrl" then
 		TOGGLE = TOGGLE * - 1
-	elseif button == "x" then
+	elseif k == "lshift" then
+		TOGGLE = 1
+	elseif k == "rshift" then
+		TOGGLE = 8
+	elseif k == "x" then
 		red = red + TOGGLE
 		if red > 255 then red = 255 end
 		if red < 0 then red = 0 end
 		r = red/255
-	elseif button == "y" then
+	elseif k == "y" then
 		green = green + TOGGLE
 		if green > 255 then green = 255 end
 		if green < 0 then green = 0 end
 		g = green/255
-	elseif button == "b" then
+	elseif k == "b" then
 		blue = blue + TOGGLE
 		if blue > 255 then blue = 255 end
 		if blue < 0 then blue = 0 end
 		b = blue/255
-	elseif button == "back" then
+	elseif k == "return" then
 		red = tonumber(contents[POS[SEL]],16)*16 + tonumber(contents[POS[SEL]+1],16)
 		r = red/255
 		green = tonumber(contents[POS[SEL]+2],16)*16 + tonumber(contents[POS[SEL]+3],16)
 		g = green/255
 		blue = tonumber(contents[POS[SEL]+4],16)*16 + tonumber(contents[POS[SEL]+5],16)
 		b = blue/255
+	elseif k == "escape" then
+		love.event.quit() -- a keyboard based quit for console mode or debugging
 	end
 end

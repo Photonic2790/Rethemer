@@ -1,4 +1,5 @@
 #!/bin/bash
+# ICON: rethemer
 
 XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
@@ -19,12 +20,18 @@ get_controls
 GAMEDIR=/$directory/MUOS/application/Rethemer
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
+if [[ "${DEVICE_NAME^^}" == 'X55' ]] || [[ "${DEVICE_NAME^^}" == 'RG353P' ]] || [[ "${DEVICE_NAME^^}" == *'RG40XX'* ]]; then
+    GPTOKEYB_CONFIG="./rethemertriggers.gptk"  
+else
+    GPTOKEYB_CONFIG="./rethemer.gptk"
+fi
+
 cd $GAMEDIR
 
 export LD_LIBRARY_PATH="$GAMEDIR/libs:$LD_LIBRARY_PATH"
 
 $ESUDO chmod 666 /dev/uinput
-$GPTOKEYB "love" -c "./rethemer.gptk" &
+$GPTOKEYB "love" -c "$GPTOKEYB_CONFIG" &
 ./love rethemer
 
 $ESUDO kill -9 $(pidof gptokeyb)

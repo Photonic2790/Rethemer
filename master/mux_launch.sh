@@ -20,7 +20,7 @@ get_controls
 GAMEDIR=/$directory/MUOS/application/Rethemer
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
-if [[ "${DEVICE_NAME^^}" == 'X55' ]] || [[ "${DEVICE_NAME^^}" == 'RG353P' ]] || [[ "${DEVICE_NAME^^}" == *'RG40XX'* ]]; then
+if [[ "${DEVICE_NAME^^}" == *'RG35XX'*'SP'* ]] || [[ "${DEVICE_NAME^^}" == *'RG28XX'* ]]; then
     GPTOKEYB_CONFIG="./rethemertriggers.gptk"  
 else
     GPTOKEYB_CONFIG="./rethemer.gptk"

@@ -6,30 +6,17 @@ x = repeat
 y = y
 y = repeat
 
-up = up
-down = down
-left = left
-right = right
+
+up = mouse_movement_up
 
 l1 = mouse_left
 r1 = mouse_right
-l2 = leftshift
-r2 = rightshift
-l3 = leftctrl
-r3 = rightctrl
+
+l2 = leftctrl
+r2 = rightctrl
 
 back = enter
 
-left_analog_up = mouse_movement_up
-
-right_analog_up = up
-right_analog_up = repeat
-right_analog_down = down
-right_analog_down = repeat
-right_analog_left = left
-right_analog_left = repeat
-right_analog_right = right
-right_analog_right = repeat
 
 deadzone_triggers = 3000
 mouse_scale = 6000
